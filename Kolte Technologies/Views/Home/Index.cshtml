@@ -1,0 +1,241 @@
+﻿@model IEnumerable<Kolte_Technologies.Models.contact>
+
+@{
+    ViewBag.Title = "Index";
+}
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<div>
+    @*<button type="button"  onclick="btncreate();">Create</button>*@
+    <button type="button" class="btn btn-sm btn-primary border float-left" data-bs-toggle="modal" data-bs-target="#modalbox">Create New</button>
+</div>
+
+<div class="modal fade" id="flipFlop" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="modalLabel">Modal Title</h4>
+            </div>
+            <div class="modal-body">
+                Modal content...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered table-active table-responsive table-hover table-light" id="mytable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.city)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.dob)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.contact_no)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.city)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.dob)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.contact_no)
+                </td>
+                <td>
+                    <button type="button" id="@item.Contactid" class="btnedit"> Edit</button>
+                    @*@Html.ActionLink("Edit", "Edit", new { id = item.Contactid},new { @class="btnedit"})*@    
+                    @*@Html.ActionLink("Details", "Details", new { id = item.Contactid }) |*@
+                   @* @Html.ActionLink("Delete", "Delete", new { id = item.Contactid })*@
+                    <button type="button" id="@item.Contactid" class="btndelete"> Delete</button>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+<div class="modal fade " id="modalbox" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label"> Id</label>
+                        <input type="hidden" class="form-control form-control-sm" placeholder="Enter  Id" id="ContactId" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"> Name</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Enter  Name" id="name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">City</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Enter City" id="city" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control form-control-sm" placeholder="Enter Email" id="email" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control form-control-sm" placeholder="Enter DOB" id="dob" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contact No</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="Enter ContactNo" id="contact_no" />
+                    </div>
+                    <div class="mb-3">
+
+                        <button class="btn btn-sm btn-success" id="addItem" type="button">Add</button>
+                        <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" @*onclick="Update();"*@>Update</button>
+                        <button id="btnclose" class="btn btn-sm btn-primary" data-bs-dismiss="modal" type="button">Close</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+       
+
+        $('#addItem').show();
+        $('#btnUpdate').hide();
+        $("#addItem").click(function () {
+            debugger;
+          
+            var contact = {
+                Name: $("#name").val(),
+                City: $("#city").val(),
+                Email: $("#email").val(),
+                DOB: $("#dob").val(),
+                Contact_no: $("#contact_no").val()
+            }
+            $("#modalbox").modal("hide");
+            $.ajax({
+                type: "POST",
+                url: "/Home/create",
+                data: JSON.stringify(contact),
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    location = location.href;
+                    $("#name").val('');
+                    $("#city").val('');
+                    $("#email").val('');
+                    $("#dob").val('');
+                    $("#contact_no").val('');
+
+
+                }
+
+            })
+        });
+
+        $(".btnedit").click(function () {
+            $("#modalbox").modal("show");
+            $.ajax({
+                type: 'Get',
+                url: "/Home/Edit?Id=" + this.id,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#ContactId").val(data.Contactid);
+                    $("#name").val(data.name);
+                    $("#city").val(data.city);
+                    $("#email").val(data.email);
+                    $("#dob").val(data.dob);
+                    $("#contact_no").val(data.contact_no);
+                    $('#btnUpdate').show();
+                    $('#addItem').hide();
+                }
+            })
+        });
+        $("#btnclose").click(function () {
+            $("#name").val('');
+            $("#city").val('');
+            $("#email").val('');
+            $("#dob").val('');
+            $("#contact_no").val('');
+        })
+
+        $("#btnUpdate").click(function () {
+            var contact = {
+                Contactid: $("#ContactId").val(),
+
+                Name: $("#name").val(),
+                City: $("#city").val(),
+                Email: $("#email").val(),
+                DOB: $("#dob").val(),
+                Contact_no: $("#contact_no").val()
+            }
+            $.ajax({
+                type: "POST",
+                url: "/Home/Edit",
+                data: JSON.stringify(contact),
+                contentType: "application/json; charset=utf-8 ",
+                success: function (data) {
+                    location = location.href;
+                },
+                error: function(){
+                    alert(data.msg);
+                }
+            })
+        });
+
+        $(".btndelete").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "/Home/Delete?Id=" + this.id,
+                contentType: "apllication/json; charset=utf-8",
+                success: function (data) {
+                    location = location.href;
+                    alert("Delete Successfully");
+                }
+            })
+        });
+
+    });
+
+
+
+</script>
